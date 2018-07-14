@@ -1,0 +1,12 @@
+<ng-container *ngIf="auth.user | async as user; else login">
+
+
+    Pay me!
+    <button (click)="auth.logout()">Logout</button>
+
+</ng-container>
+
+
+<ng-template #login>
+    <button (click)="auth.anonymousLogin()">Login</button>
+</ng-template>

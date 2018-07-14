@@ -1,18 +1,12 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { fas } from '@fortawesome/free-solid-svg-icons';
-import { fab } from '@fortawesome/free-brands-svg-icons';
-library.add(fas, fab);
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
-import { AngularFireStorageModule } from 'angularfire2/storage';
+import { AngularFireFunctionsModule } from 'angularfire2/functions';
 import { AngularFireAuthModule } from 'angularfire2/auth';
-
 
 // Add your project credentials
 // Then use it in the imports section below
@@ -27,20 +21,19 @@ const yourFirebaseConfig = {
 
 // Delete Me!
 import { firebase } from '../env';
+import { PaymentFormComponent } from './payment-form/payment-form.component';
+import { FortuneTellerComponent } from './fortune-teller/fortune-teller.component';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent, PaymentFormComponent, FortuneTellerComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(firebase),
-    AngularFirestoreModule, 
-    AngularFireAuthModule, 
-    AngularFireStorageModule,
-    FontAwesomeModule 
+    AngularFirestoreModule,
+    AngularFireAuthModule,
+    AngularFireFunctionsModule
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
