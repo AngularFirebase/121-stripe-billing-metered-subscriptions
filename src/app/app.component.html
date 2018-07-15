@@ -1,18 +1,19 @@
 <main>
-    <h3>Fortune Teller SaaS</h3>
-    4242424242424242<br>
+    <h1>Project Management SaaS</h1>
 
     <ng-container *ngIf="auth.user | async as user; else login">
-        <payment-form></payment-form>
+        <h3>Estimated Bill: <span style="color: #23d160">${{ user.currentUsage || 0 }}.00 USD</span></h3>
+
+        <payment-form *ngIf="user.status != 'active'"></payment-form>
         <project-manager *ngIf="user.status == 'active'" [userId]="user.uid"></project-manager>
-        <button (click)="auth.logout()">Logout</button> {{ user | json }}
+        <button class="button" (click)="auth.logout()">Logout</button>
 
 
     </ng-container>
 
 
     <ng-template #login>
-        <button (click)="auth.anonymousLogin()">Login</button>
+        <button class="button" (click)="auth.anonymousLogin()">Login</button>
     </ng-template>
 
 </main>

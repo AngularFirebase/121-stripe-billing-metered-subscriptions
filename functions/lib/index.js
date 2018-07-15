@@ -48,11 +48,46 @@ exports.startSubscription = functions.https.onCall((data, context) => __awaiter(
         return db.doc(`users/${userId}`).update({
             status: sub.status,
             currentUsage: 0,
-            subscriptionId: sub.id
+            subscriptionId: sub.id,
+            itemId: sub.items.data[0].id
         });
     }
     catch (error) {
         throw new Error(error);
     }
+}));
+// exports.tellFortune = functions.https.onCall(async (data, context) => {
+//   const userId = context.auth.uid;
+//   const userDoc = await db.doc(`users/${userId}`).get();
+//   const user = userDoc.data();
+//   await (stripe as any).usageRecords.create(
+//     user.itemId,
+//     {
+//       quantity: 1,
+//       timestamp: Date.now(),
+//       action: 'increment'
+//     },
+//     {
+//       idempotency_key: data.idempotencyKey
+//     }
+//   );
+//   return;
+// });
+exports.updateUsage = functions.firestore
+    .document('projects/{projectId}')
+    .onCreate((snap) => __awaiter(this, void 0, void 0, function* () {
+    const userRef = db.doc(`users/${snap.data().userId}`);
+    const userDoc = yield userRef.get();
+    const user = userDoc.data();
+    console.log(user);
+    const usage = yield stripe.usageRecords.create(user.itemId, {
+        quantity: 1,
+        timestamp: (Date.parse(snap.createTime) / 1000) | 0,
+        action: 'increment'
+    }, {
+        idempotency_key: snap.id
+    });
+    console.log(usage);
+    return userRef.update({ currentUsage: user.currentUsage + 1 });
 }));
 //# sourceMappingURL=index.js.map

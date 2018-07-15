@@ -4,10 +4,9 @@ admin.initializeApp();
 const db = admin.firestore();
 
 import * as Stripe from 'stripe';
-import { event } from 'firebase-functions/lib/providers/analytics';
 const stripe = new Stripe(functions.config().stripe.secret);
 
-exports.createStripeCustomer = functions.auth
+export const createStripeCustomer = functions.auth
   .user()
   .onCreate(async (userRecord, context) => {
     const firebaseUID = userRecord.uid;
@@ -21,22 +20,17 @@ exports.createStripeCustomer = functions.auth
     });
   });
 
-exports.startSubscription = functions.https.onCall(async (data, context) => {
-  try {
+export const startSubscription = functions.https.onCall(
+  async (data, context) => {
     const userId = context.auth.uid;
     const userDoc = await db.doc(`users/${userId}`).get();
 
     const user = userDoc.data();
 
-    console.log(1, data);
-    console.log(1, context);
-
     // Attach the card to the user
     const source = await stripe.customers.createSource(user.stripeId, {
       source: data.source
     });
-
-    console.log(2, source);
 
     if (!source) {
       throw new Error('Stripe failed to attach card');
@@ -48,59 +42,35 @@ exports.startSubscription = functions.https.onCall(async (data, context) => {
       items: [{ plan: 'plan_DELd0Jgt7IVwF7' }]
     });
 
+    // Update user document
     return db.doc(`users/${userId}`).update({
       status: sub.status,
       currentUsage: 0,
       subscriptionId: sub.id,
       itemId: sub.items.data[0].id
     });
-  } catch (error) {
-    throw new Error(error);
   }
-});
+);
 
-// exports.tellFortune = functions.https.onCall(async (data, context) => {
-//   const userId = context.auth.uid;
-//   const userDoc = await db.doc(`users/${userId}`).get();
-
-//   const user = userDoc.data();
-
-//   await (stripe as any).usageRecords.create(
-//     user.itemId,
-//     {
-//       quantity: 1,
-//       timestamp: Date.now(),
-//       action: 'increment'
-//     },
-//     {
-//       idempotency_key: data.idempotencyKey
-//     }
-//   );
-
-//   return;
-// });
-
-exports.updateUsage = functions.firestore
+export const updateUsage = functions.firestore
   .document('projects/{projectId}')
-  .onCreate(async (change, context) => {
-    const userRef = db.doc(`users/${context.auth.uid}`);
+  .onCreate(async snap => {
+    const userRef = db.doc(`users/${snap.data().userId}`);
 
     const userDoc = await userRef.get();
     const user = userDoc.data();
 
-    const usage = await (stripe as any).usageRecords.create(
+    await (stripe as any).usageRecords.create(
       user.itemId,
       {
         quantity: 1,
-        timestamp: Date.now(),
+        timestamp: (Date.parse(snap.createTime) / 1000) | 0,
         action: 'increment'
       },
       {
-        idempotency_key: change.id
+        idempotency_key: snap.id
       }
     );
-
-    console.log(usage);
 
     return userRef.update({ currentUsage: user.currentUsage + 1 });
   });

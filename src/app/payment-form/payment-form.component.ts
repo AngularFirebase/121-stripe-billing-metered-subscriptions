@@ -1,5 +1,4 @@
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
-import { AuthService } from '../auth.service';
 import { AngularFireFunctions } from 'angularfire2/functions';
 
 declare var Stripe: any;
@@ -24,7 +23,6 @@ export class PaymentFormComponent implements AfterViewInit {
 
   async handleForm(e) {
     e.preventDefault();
-    console.log(e);
     const { token, error } = await stripe.createToken(card);
 
     if (error) {
