@@ -22,10 +22,10 @@ const yourFirebaseConfig = {
 // Delete Me!
 import { firebase } from '../env';
 import { PaymentFormComponent } from './payment-form/payment-form.component';
-import { FortuneTellerComponent } from './fortune-teller/fortune-teller.component';
+import { ProjectManagerComponent } from './project-manager/project-manager.component';
 
 @NgModule({
-  declarations: [AppComponent, PaymentFormComponent, FortuneTellerComponent],
+  declarations: [AppComponent, PaymentFormComponent, ProjectManagerComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

@@ -10,8 +10,11 @@ import { switchMap } from 'rxjs/operators';
 
 interface User {
   uid: string;
+
   stripeId?: string;
-  subscribed?: string;
+
+  subscriptionId?: string;
+  status?: string;
   currentUsage?: number;
 }
 

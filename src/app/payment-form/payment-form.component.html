@@ -1,12 +1,15 @@
-<ng-container *ngIf="auth.user | async as user; else login">
+<form action="/charge" method="post" (submit)="handleForm($event)">
+    <div class="form-row">
+        <label for="card-element">
+        Credit or debit card
+      </label>
+        <div #cardForm>
+            <!-- A Stripe Element will be inserted here. -->
+        </div>
 
+        <!-- Used to display Element errors. -->
+        <div id="card-errors" role="alert"></div>
+    </div>
 
-    Pay me!
-    <button (click)="auth.logout()">Logout</button>
-
-</ng-container>
-
-
-<ng-template #login>
-    <button (click)="auth.anonymousLogin()">Login</button>
-</ng-template>
+    <button>Submit Payment</button>
+</form>

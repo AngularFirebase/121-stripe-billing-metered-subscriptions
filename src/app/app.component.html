@@ -1,5 +1,19 @@
 <main>
     <h3>Fortune Teller SaaS</h3>
-    <payment-form></payment-form>
+    4242424242424242<br>
+
+    <ng-container *ngIf="auth.user | async as user; else login">
+        <payment-form></payment-form>
+        <project-manager *ngIf="user.status == 'active'" [userId]="user.uid"></project-manager>
+        <button (click)="auth.logout()">Logout</button> {{ user | json }}
+
+
+    </ng-container>
+
+
+    <ng-template #login>
+        <button (click)="auth.anonymousLogin()">Login</button>
+    </ng-template>
+
 </main>
 <router-outlet></router-outlet>
